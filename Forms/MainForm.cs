@@ -25,6 +25,48 @@ namespace Messenger
             LoadUsers();
         }
 
+
+        #region Form buttons handlers
+
+        private void BtnUser_Click(object sender, System.EventArgs e)
+        {
+            OpenChildForm(new LoginForm(this));
+        }
+
+
+        private void ExitBtn_Click(object sender, EventArgs e)
+        {
+            CloseChildForm(null);
+        }
+
+
+        private void sendNewMessageButton_Click(object sender, EventArgs e)
+        {
+            if (_activeUser == null)
+            {
+                MessageBox.Show("You need to log in first!", "LogIn");
+                return;
+            }
+
+            var _receiverName = comboBox1.SelectedItem as string;
+
+            using (var _db = new MessengerContext())
+            {
+                var _receiver = _db.Users
+                    .Where(x => x.Username.Equals(_receiverName))
+                    .Select(x => x as User)
+                    .FirstOrDefault();
+
+                var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
+                this.flowlayoutMessages.Controls.Add(_messageToUser);
+            }
+        }
+
+        #endregion
+
+
+        #region Private methods
+
         private void LoadUsers()
         {
             using (var _db = new MessengerContext())
@@ -36,6 +78,11 @@ namespace Messenger
 
             comboBox1.DataSource = _allUsers;
         }
+
+        #endregion
+
+
+        #region Public methods
 
         /// <summary>
         /// Opens child form in Child-form-panel and sets it properly.
@@ -56,18 +103,10 @@ namespace Messenger
         }
 
 
-        private void BtnUser_Click(object sender, System.EventArgs e)
-        {
-            OpenChildForm(new LoginForm(this));
-        }
-
-
-        private void ExitBtn_Click(object sender, EventArgs e)
-        {
-            CloseChildForm(null);
-        }
-
-
+        /// <summary>
+        /// Sets _activeUser field to new User and changes name in side panel.
+        /// </summary>
+        /// <param name="newUser">New User</param>
         public void UserChanged(User newUser)
         {
             _activeUser = newUser;
@@ -110,28 +149,7 @@ namespace Messenger
             ChangeChildTitle(newTitle);
         }
 
+        #endregion
 
-
-        private void sendNewMessageButton_Click(object sender, EventArgs e)
-        {
-            if (_activeUser == null)
-            {
-                MessageBox.Show("You need to log in first!", "LogIn");
-                return;
-            }
-
-            var _receiverName = comboBox1.SelectedItem as string;
-
-            using (var _db = new MessengerContext())
-            {
-                var _receiver = _db.Users
-                    .Where(x => x.Username.Equals(_receiverName))
-                    .Select(x => x as User)
-                    .FirstOrDefault();
-                
-                var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
-                this.flowlayoutMessages.Controls.Add(_messageToUser);
-            }
-        }
     }
 }

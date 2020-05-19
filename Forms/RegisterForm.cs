@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Entity.Migrations;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
@@ -63,7 +64,7 @@ namespace Messenger.Forms
                         Password = _pass
                     };
 
-                    _dbContext.Users.Add(_newUser);
+                    _dbContext.Users.AddOrUpdate(_newUser);
                     _dbContext.SaveChanges();
                 }
 
@@ -74,6 +75,9 @@ namespace Messenger.Forms
             else
             {
                 MessageBox.Show($"Sorry, but {_username} is already taken!", "Invalid Username");
+                textUsername.Clear();
+                textPassword.Clear();
+                textPasswordCheck.Clear();
             }
         }
 

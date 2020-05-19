@@ -36,10 +36,10 @@ namespace Messenger
 
             Console.WriteLine($"DEBUG:\nUsername={_username}\nPassword={_pass}");
 
-            var _userMatch = LoginUser(_username, _pass);
+            var _newUser = LoginUser(_username, _pass);
 
-            // User does not exists
-            if (_userMatch == null)
+            // User not found
+            if (_newUser == null)
             {
                 MessageBox.Show("Username or Password is incorrect!\n\n" +
                                 "If you don't have account yet, please create new one, by clicking Register button.",
@@ -48,24 +48,22 @@ namespace Messenger
                 this.textUsername.Clear();
                 this.textPassword.Clear();
             }
-
+            // Log in new user
             else
             {
-                _mainForm.UserChanged(_userMatch);
+                _mainForm.UserChanged(_newUser);
                 _mainForm.CloseChildForm();
             }
 
         }
 
-
+        // Returns null if user not found, <User> else
         private User LoginUser(string username, string pass)
         {
             using (var _dataContext = new MessengerContext())
             {
                 return _dataContext.Users
-                    .Where(usr => usr.Username == username && usr.Password == pass)
-                    .Select(x => x as User)
-                    .FirstOrDefault();
+                    .FirstOrDefault(usr => usr.Username == username && usr.Password == pass);
             }
         }
 

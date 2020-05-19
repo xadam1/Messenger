@@ -22,6 +22,7 @@ namespace Messenger.Controls
             InitializeComponent();
         }
 
+
         public MessageBubble(MainForm mainForm, User sender, string text) : this()
         {
             _mainForm = mainForm;
@@ -31,6 +32,7 @@ namespace Messenger.Controls
             SetMessage();
         }
 
+        
         private void SetMessage()
         {
             this.FromUserLbl.Text = _sender;

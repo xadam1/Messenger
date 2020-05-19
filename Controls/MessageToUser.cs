@@ -13,15 +13,14 @@ namespace Messenger
     public partial class MessageToUser : UserControl
     {
         public static MainForm _mainForm;
-        private User _receiver;
-        private User _activeUser;
+        private readonly User _receiver;
+        private readonly User _activeUser;
 
         public MessageToUser()
         {
             InitializeComponent();
         }
         
-
         public MessageToUser(MainForm mainFormReference, User receiver, User activeUser) : this()
         {
             _mainForm = mainFormReference;
@@ -30,6 +29,7 @@ namespace Messenger
 
             this.Receiver.Text = receiver.Username;
         }
+
 
         private void Username_Click(object sender, EventArgs e)
         {
