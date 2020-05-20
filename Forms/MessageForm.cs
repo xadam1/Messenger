@@ -38,36 +38,17 @@ namespace Messenger
         }
 
 
-        private void sendButton_Click(object sender, EventArgs e)
-        {
-            var _messageBubble = new MessageBubble(_mainForm, _activeUser, messageTextBox.Text);
-            messageFlowLayoutPanel.Controls.Add(_messageBubble);
-
-            using (var _db = new MessengerContext())
-            {
-                var _message = new Message()
-                {
-                    Sender = _activeUser,
-                    Text = messageTextBox.Text
-                };
-
-                _conversation.Messages.Add(_message);
-
-                // Assign updated Message list to object in db
-                _db.Conversations.First(x => x.ConversationId == _conversation.ConversationId).Messages =
-                    _conversation.Messages;
-
-                _db.SaveChanges();
-                messageTextBox.Clear();
-            }
-        }
-
-
         private void LoadConversation()
         {
             using (var _db = new MessengerContext())
             {
+                // Attaching users to this context
+                _db.Users.Attach(_activeUser);
+                _db.Users.Attach(_receiver);
+
+                // Find conversation between these two users if one already exists
                 var _conversationsMatch = _db.Conversations
+                    .Include(x => x.Messages)
                     .FirstOrDefault(conv =>
                         (conv.FirstUser.UserId == _activeUser.UserId || conv.FirstUser.UserId == _receiver.UserId) &&
                         conv.SecondUser.UserId == _activeUser.UserId || conv.SecondUser.UserId == _receiver.UserId);
@@ -75,22 +56,22 @@ namespace Messenger
                 if (_conversationsMatch != null)
                 {
                     _conversation = _conversationsMatch;
-                    return;
                 }
 
-                // Only runs when Conversation does not exists
-                var _newConversation = new Conversation
-                {
-                    FirstUser = _activeUser,
-                    SecondUser = _receiver,
-                    Messages = new List<Message>()
-                };
+                else
+                {   // Only runs when Conversation does not exists
+                    var _newConversation = new Conversation
+                    {
+                        FirstUser = _activeUser,
+                        SecondUser = _receiver,
+                        Messages = new List<Message>()
+                    };
 
-                _conversation = _newConversation;
+                    _conversation = _newConversation;
 
-                // TODO FIX CREATES DUPLICATE USERS
-                _db.Conversations.AddOrUpdate(_newConversation);
-                _db.SaveChanges();
+                    _db.Conversations.AddOrUpdate(_newConversation);
+                    _db.SaveChanges();
+                }
             }
         }
 
@@ -99,14 +80,45 @@ namespace Messenger
         {
             if (_conversation.Messages.Count < 1)
             {
-                Console.WriteLine("DEBUG: No messages to load.");
+                Console.WriteLine("DEBUG: No messages found.");
                 return;
             }
 
             foreach (var _message in _conversation.Messages)
             {
+                // TODO add enum representing Incoming/Outgoing messages -> change color of bubble
                 var _messageBubble = new MessageBubble(_mainForm, _message.Sender, _message.Text);
                 messageFlowLayoutPanel.Controls.Add(_messageBubble);
+            }
+        }
+
+
+        private void sendButton_Click(object sender, EventArgs e)
+        {
+            var _messageBubble = new MessageBubble(_mainForm, _activeUser, messageTextBox.Text);
+            messageFlowLayoutPanel.Controls.Add(_messageBubble);
+
+            using (var _db = new MessengerContext())
+            {
+                _db.Users.Attach(_activeUser);
+                _db.Conversations.Attach(_conversation);
+
+                var _message = new Message()
+                {
+                    Sender = _activeUser,
+                    Text = messageTextBox.Text
+                };
+
+                _conversation.Messages.Add(_message);
+
+                //TODO FIX - DUPLICATE USERS WHEN admin-franta and then franta-admin sends message
+
+                // Assign updated Message list to object in db
+                _db.Conversations.First(x => x.ConversationId == _conversation.ConversationId).Messages =
+                    _conversation.Messages;
+
+                _db.SaveChanges();
+                messageTextBox.Clear();
             }
         }
     }

@@ -18,6 +18,7 @@ namespace Messenger
         private User _activeUser;
         private List<string> _allUsers;
 
+
         public MainForm()
         {
             InitializeComponent();
@@ -45,6 +46,7 @@ namespace Messenger
             if (_activeUser == null)
             {
                 MessageBox.Show("You need to log in first!", "LogIn");
+                SwitchNewMessageOverlay();
                 return;
             }
 
@@ -60,6 +62,14 @@ namespace Messenger
                 var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                 this.flowlayoutMessages.Controls.Add(_messageToUser);
             }
+
+            SwitchNewMessageOverlay();
+        }
+
+
+        private void newMessageOverlayBtn_Click(object sender, EventArgs e)
+        {
+            SwitchNewMessageOverlay();
         }
 
         #endregion
@@ -77,6 +87,22 @@ namespace Messenger
             }
 
             comboBox1.DataSource = _allUsers;
+        }
+
+
+        private void SwitchNewMessageOverlay()
+        {
+            if (newMessagePanelToggle.Visible)
+            {
+                this.newMessagePanelToggle.Visible = false;
+                this.addMessageOverlayPanel.Visible = true;
+            }
+            else
+            {
+                this.addMessageOverlayPanel.Visible = false;
+                this.newMessagePanelToggle.Visible = true;
+            }
+
         }
 
         #endregion
@@ -113,6 +139,32 @@ namespace Messenger
 
             this.btnUser.Text = newUser.Username;
             ChangeChildTitle($"Welcome {newUser.Username}");
+
+            // Remove all messages
+            this.flowlayoutMessages.Controls.Clear();
+
+            using (var _dbContext = new MessengerContext())
+            {
+                _dbContext.Users.Attach(_activeUser);
+
+                // Add users who have conversation with currently logged user
+                var _receivers = _dbContext.Conversations
+                    .Where(x => x.FirstUser.UserId == _activeUser.UserId)
+                    .Select(x => x.SecondUser)
+                    .ToList();
+
+                _receivers.AddRange(_dbContext.Conversations
+                    .Where(x => x.SecondUser.UserId == _activeUser.UserId)
+                    .Select(x => x.FirstUser)
+                    .ToList());
+
+                foreach (var _receiver in _receivers)
+                {
+                    var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
+                    this.flowlayoutMessages.Controls.Add(_messageToUser);
+                }
+
+            }
         }
 
 
@@ -150,6 +202,18 @@ namespace Messenger
         }
 
         #endregion
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.newMessagePanel.Visible = false;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.newMessagePanel.Visible = true;
+
+        }
 
     }
 }
