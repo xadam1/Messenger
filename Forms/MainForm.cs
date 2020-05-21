@@ -163,7 +163,6 @@ namespace Messenger
                     var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                     this.flowlayoutMessages.Controls.Add(_messageToUser);
                 }
-
             }
         }
 

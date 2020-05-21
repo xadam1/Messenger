@@ -19,7 +19,7 @@ namespace Messenger
         private MainForm _mainForm;
         private User _activeUser;
         private User _receiver;
-        private Conversation _conversation;
+        private Conversation _conversation = null;
 
 
         public MessageForm()
@@ -47,12 +47,22 @@ namespace Messenger
                 _db.Users.Attach(_receiver);
 
                 // Find conversation between these two users if one already exists
+                /*
                 var _conversationsMatch = _db.Conversations
                     .Include(x => x.Messages)
+                    .Include(x => x.FirstUser)
+                    .Include(x => x.SecondUser)
                     .FirstOrDefault(conv =>
                         (conv.FirstUser.UserId == _activeUser.UserId || conv.FirstUser.UserId == _receiver.UserId) &&
                         conv.SecondUser.UserId == _activeUser.UserId || conv.SecondUser.UserId == _receiver.UserId);
-
+                */
+                
+                var _conversationsMatch = _db.Conversations
+                    .Where(c => c.FirstUser.UserId == _activeUser.UserId || c.FirstUser.UserId == _receiver.UserId)
+                    .Where(c => c.SecondUser.UserId == _activeUser.UserId || c.SecondUser.UserId == _receiver.UserId)
+                    .Include(x => x.Messages)
+                    .SingleOrDefault();
+                
                 if (_conversationsMatch != null)
                 {
                     _conversation = _conversationsMatch;
@@ -110,8 +120,6 @@ namespace Messenger
                 };
 
                 _conversation.Messages.Add(_message);
-
-                //TODO FIX - DUPLICATE USERS WHEN admin-franta and then franta-admin sends message
 
                 // Assign updated Message list to object in db
                 _db.Conversations.First(x => x.ConversationId == _conversation.ConversationId).Messages =
