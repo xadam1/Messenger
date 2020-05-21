@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Messenger.Controls;
 
-namespace Messenger
+namespace Messenger.Forms
 {
     public partial class MessageForm : Form
     {
         private MainForm _mainForm;
         private User _activeUser;
         private User _receiver;
-        private Conversation _conversation = null;
+        private Conversation _conversation;
 
 
         public MessageForm()
@@ -47,16 +41,6 @@ namespace Messenger
                 _db.Users.Attach(_receiver);
 
                 // Find conversation between these two users if one already exists
-                /*
-                var _conversationsMatch = _db.Conversations
-                    .Include(x => x.Messages)
-                    .Include(x => x.FirstUser)
-                    .Include(x => x.SecondUser)
-                    .FirstOrDefault(conv =>
-                        (conv.FirstUser.UserId == _activeUser.UserId || conv.FirstUser.UserId == _receiver.UserId) &&
-                        conv.SecondUser.UserId == _activeUser.UserId || conv.SecondUser.UserId == _receiver.UserId);
-                */
-                
                 var _conversationsMatch = _db.Conversations
                     .Where(c => c.FirstUser.UserId == _activeUser.UserId || c.FirstUser.UserId == _receiver.UserId)
                     .Where(c => c.SecondUser.UserId == _activeUser.UserId || c.SecondUser.UserId == _receiver.UserId)

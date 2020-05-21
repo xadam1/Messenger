@@ -1,4 +1,4 @@
-﻿namespace Messenger
+﻿namespace Messenger.Controls
 {
     partial class MessageToUser
     {

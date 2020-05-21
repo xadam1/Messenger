@@ -1,4 +1,4 @@
-﻿namespace Messenger
+﻿namespace Messenger.Forms
 {
     partial class MainForm
     {
