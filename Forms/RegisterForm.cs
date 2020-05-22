@@ -87,7 +87,7 @@ namespace Messenger.Forms
                 return _foundSameUsername == null;
             }
         }
-
+        
 
         private void loginBtn_Click(object sender, EventArgs e)
         {

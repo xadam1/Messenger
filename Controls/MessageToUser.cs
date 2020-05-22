@@ -14,7 +14,7 @@ namespace Messenger.Controls
         {
             InitializeComponent();
         }
-        
+
         public MessageToUser(MainForm mainFormReference, User receiver, User activeUser) : this()
         {
             _mainForm = mainFormReference;
@@ -24,9 +24,17 @@ namespace Messenger.Controls
             this.Receiver.Text = receiver.Username;
         }
 
+        public bool CheckUserSimilarityAndClick(User user)
+        {
+            if (user.UserId != _receiver.UserId) return false;
+            
+            Username_Click(null, EventArgs.Empty);
+            return true;
+        }
 
         private void Username_Click(object sender, EventArgs e)
         {
+            _mainForm.ChangeChildTitle($"{_receiver.Username.ToUpper()} CHAT");
             _mainForm.OpenChildForm(new MessageForm(_mainForm, _activeUser, _receiver));
         }
     }

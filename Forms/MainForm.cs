@@ -12,13 +12,14 @@ namespace Messenger.Forms
         private Form _activeForm;
         private User _activeUser;
         private List<string> _allUsers;
+        private List<User> _openConversations = new List<User>();
 
 
         public MainForm()
         {
             InitializeComponent();
 
-            LoadUsers();
+            DatabaseUnlag();
         }
 
 
@@ -50,12 +51,31 @@ namespace Messenger.Forms
             using (var _db = new MessengerContext())
             {
                 var _receiver = _db.Users
-                    .Where(x => x.Username.Equals(_receiverName))
-                    .Select(x => x as User)
-                    .FirstOrDefault();
+                    .FirstOrDefault(x => x.Username.Equals(_receiverName));
+
+                // Check for invalid receiver
+                if (_receiver == null || _receiver.UserId == _activeUser.UserId)
+                {
+                    Console.WriteLine("DEBUG: Tried to add MessageToUser to same user as currently logged, or receiver was null.");
+                    return;
+                }
+
+                // Check for already open conversations
+                if (_openConversations.SingleOrDefault(x => x.UserId == _receiver.UserId) != null)
+                {
+                    bool flag = false;
+                    foreach (Control _messagesControl in this.flowlayoutMessages.Controls)
+                    {
+                        var _msg = _messagesControl as MessageToUser;
+                        flag = _msg.CheckUserSimilarityAndClick(_receiver);
+                        if (flag) { return; }
+                    }
+
+                }
 
                 var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                 this.flowlayoutMessages.Controls.Add(_messageToUser);
+                _openConversations.Add(_receiver);
             }
 
             SwitchNewMessageOverlay();
@@ -77,11 +97,39 @@ namespace Messenger.Forms
             using (var _db = new MessengerContext())
             {
                 _allUsers = _db.Users
-                    .Select(x => x.Username)
+                    .Where(u => u.UserId != _activeUser.UserId)
+                    .Select(u => u.Username)
                     .ToList();
             }
 
             comboBox1.DataSource = _allUsers;
+        }
+
+
+        private void LoadConversations()
+        {
+            using (var _dbContext = new MessengerContext())
+            {
+                _dbContext.Users.Attach(_activeUser);
+
+                // Add users who have conversation with currently logged user
+                var _receivers = _dbContext.Conversations
+                    .Where(x => x.FirstUser.UserId == _activeUser.UserId)
+                    .Select(x => x.SecondUser)
+                    .ToList();
+
+                _receivers.AddRange(_dbContext.Conversations
+                    .Where(x => x.SecondUser.UserId == _activeUser.UserId)
+                    .Select(x => x.FirstUser)
+                    .ToList());
+
+                foreach (var _receiver in _receivers)
+                {
+                    var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
+                    this.flowlayoutMessages.Controls.Add(_messageToUser);
+                    _openConversations.Add(_receiver);
+                }
+            }
         }
 
 
@@ -98,6 +146,15 @@ namespace Messenger.Forms
                 this.newMessagePanelToggle.Visible = true;
             }
 
+        }
+
+
+        private void DatabaseUnlag()
+        {
+            using (var _db = new MessengerContext())
+            {
+                var _unlag = _db.Users.Where(x => x.UserId == 1);
+            }
         }
 
         #endregion
@@ -130,6 +187,8 @@ namespace Messenger.Forms
         /// <param name="newUser">New User</param>
         public void UserChanged(User newUser)
         {
+            _openConversations.Clear();
+
             _activeUser = newUser;
 
             this.btnUser.Text = newUser.Username;
@@ -138,27 +197,11 @@ namespace Messenger.Forms
             // Remove all messages
             this.flowlayoutMessages.Controls.Clear();
 
-            using (var _dbContext = new MessengerContext())
-            {
-                _dbContext.Users.Attach(_activeUser);
+            // Update open conversations
+            LoadConversations();
 
-                // Add users who have conversation with currently logged user
-                var _receivers = _dbContext.Conversations
-                    .Where(x => x.FirstUser.UserId == _activeUser.UserId)
-                    .Select(x => x.SecondUser)
-                    .ToList();
-
-                _receivers.AddRange(_dbContext.Conversations
-                    .Where(x => x.SecondUser.UserId == _activeUser.UserId)
-                    .Select(x => x.FirstUser)
-                    .ToList());
-
-                foreach (var _receiver in _receivers)
-                {
-                    var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
-                    this.flowlayoutMessages.Controls.Add(_messageToUser);
-                }
-            }
+            // New message receiver update
+            LoadUsers();
         }
 
 
@@ -196,18 +239,6 @@ namespace Messenger.Forms
         }
 
         #endregion
-
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.newMessagePanel.Visible = false;
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.newMessagePanel.Visible = true;
-
-        }
 
     }
 }

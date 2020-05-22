@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Messenger.Forms
 {
     public partial class LoginForm : Form
     {
-        private MainForm _mainForm;
-        private MD5CryptoServiceProvider md5Encrypter = new MD5CryptoServiceProvider();
+        private readonly MainForm _mainForm;
+        private readonly MD5CryptoServiceProvider _md5Crypto = new MD5CryptoServiceProvider();
 
 
         public LoginForm()
@@ -28,10 +29,11 @@ namespace Messenger.Forms
             string _username = textUsername.Text;
             string _pass = textPassword.Text;
 
-            //var _hashedPass = Encoding.ASCII.GetString(md5Encrypter.ComputeHash(Encoding.ASCII.GetBytes(_pass)));
+            var _hashedPass = Encoding.ASCII.GetString(_md5Crypto.ComputeHash(Encoding.ASCII.GetBytes(_pass)));
 
-            Console.WriteLine($"DEBUG:\nUsername={_username}\nPassword={_pass}");
+            Console.WriteLine($"DEBUG:\nUsername={_username}\nPassword={_pass}\nHashedPass={_hashedPass}");
 
+            // TODO Change for hashed pass version
             var _newUser = LoginUser(_username, _pass);
 
             // User not found
@@ -53,6 +55,7 @@ namespace Messenger.Forms
 
         }
 
+
         // Returns null if user not found, <User> else
         private User LoginUser(string username, string pass)
         {
@@ -68,5 +71,6 @@ namespace Messenger.Forms
         {
             _mainForm.OpenChildForm(new RegisterForm(_mainForm));
         }
+
     }
 }

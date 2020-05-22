@@ -88,6 +88,7 @@
     <Compile Include="Forms\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MessageType.cs" />
     <Compile Include="Forms\RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>

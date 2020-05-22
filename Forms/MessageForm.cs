@@ -46,7 +46,7 @@ namespace Messenger.Forms
                     .Where(c => c.SecondUser.UserId == _activeUser.UserId || c.SecondUser.UserId == _receiver.UserId)
                     .Include(x => x.Messages)
                     .SingleOrDefault();
-                
+
                 if (_conversationsMatch != null)
                 {
                     _conversation = _conversationsMatch;
@@ -80,8 +80,10 @@ namespace Messenger.Forms
 
             foreach (var _message in _conversation.Messages)
             {
-                // TODO add enum representing Incoming/Outgoing messages -> change color of bubble
-                var _messageBubble = new MessageBubble(_mainForm, _message.Sender, _message.Text);
+                // Decide whether is the message incoming or outgoing
+                var _msgType = _message.Sender.UserId == _activeUser.UserId ? MessageType.Outgoing : MessageType.Incoming;
+
+                var _messageBubble = new MessageBubble(_mainForm, _message.Sender, _msgType, _message.Text);
                 messageFlowLayoutPanel.Controls.Add(_messageBubble);
             }
         }
@@ -89,7 +91,7 @@ namespace Messenger.Forms
 
         private void sendButton_Click(object sender, EventArgs e)
         {
-            var _messageBubble = new MessageBubble(_mainForm, _activeUser, messageTextBox.Text);
+            var _messageBubble = new MessageBubble(_mainForm, _activeUser, MessageType.Outgoing, messageTextBox.Text);
             messageFlowLayoutPanel.Controls.Add(_messageBubble);
 
             using (var _db = new MessengerContext())

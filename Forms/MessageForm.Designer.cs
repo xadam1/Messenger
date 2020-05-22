@@ -38,8 +38,11 @@
             // 
             // messageFlowLayoutPanel
             // 
+            this.messageFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.messageFlowLayoutPanel.AutoScroll = true;
-            this.messageFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.messageFlowLayoutPanel.AutoSize = true;
             this.messageFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.messageFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.messageFlowLayoutPanel.Name = "messageFlowLayoutPanel";
@@ -100,6 +103,7 @@
             this.Name = "MessageForm";
             this.Text = "MessageForm";
             this.windowPanel.ResumeLayout(false);
+            this.windowPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
