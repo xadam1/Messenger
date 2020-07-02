@@ -17,7 +17,7 @@ namespace Messenger.Forms
         private List<string> _allUsers;
         private readonly List<User> _openConversations = new List<User>();
 
-
+        // Ctor
         public MainForm()
         {
             InitializeComponent();
@@ -28,33 +28,36 @@ namespace Messenger.Forms
         }
 
 
-        #region Form buttons handlers
+        #region Button clicks handlers
 
+        // Handles the click event on 'btnUser'
         private void BtnUser_Click(object sender, System.EventArgs e)
         {
             OpenChildForm(new LoginForm(this));
         }
 
-
+        // Handles the click event on 'exitBtn'
         private void ExitBtn_Click(object sender, EventArgs e)
         {
             CloseChildForm(null);
         }
 
-
+        // Handles the click event on 'sendNewMessageButton'
         private async void SendNewMessageButton_Click(object sender, EventArgs e)
         {
+            // Check if user is logged in 
             if (_activeUser == null)
             {
-                MessageBox.Show("You need to log in first!", "LogIn");
+                MessageBox.Show("You need to log in first!", "LogIn", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SwitchNewMessageOverlay();
                 return;
             }
 
-            var _receiverName = comboBox1.SelectedItem as string;
+            var _receiverName = receiverComboBox.SelectedItem as string;
 
             using (var _db = new MessengerContext())
             {
+                // Get user from DB as <User>
                 var _receiver = await _db.Users
                     .FirstOrDefaultAsync(x => x.Username.Equals(_receiverName));
 
@@ -68,15 +71,14 @@ namespace Messenger.Forms
                 // Check for already open conversations
                 if (_openConversations.SingleOrDefault(x => x.UserId == _receiver.UserId) != null)
                 {
-                    bool flag = false;
                     foreach (Control _messagesControl in this.flowlayoutMessages.Controls)
                     {
                         var _msg = _messagesControl as MessageToUser;
-                        flag = _msg.CheckUserSimilarityAndClick(_receiver);
-                        if (flag) { return; }
+                        if (_msg.CheckUserSimilarityAndClick(_receiver)) { return; }
                     }
                 }
 
+                // Conversation with new user
                 var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                 this.flowlayoutMessages.Controls.Add(_messageToUser);
                 _openConversations.Add(_receiver);
@@ -86,7 +88,7 @@ namespace Messenger.Forms
             SwitchNewMessageOverlay();
         }
 
-
+        // Handles the click event on 'newMessageOverlayBtn'
         private void NewMessageOverlayBtn_Click(object sender, EventArgs e)
         {
             SwitchNewMessageOverlay();
@@ -97,20 +99,10 @@ namespace Messenger.Forms
 
         #region Private methods
 
-        private async Task LoadUsers()
-        {
-            using (var _db = new MessengerContext())
-            {
-                _allUsers = await _db.Users
-                    .Where(u => u.UserId != _activeUser.UserId)
-                    .Select(u => u.Username)
-                    .ToListAsync();
-            }
-
-            comboBox1.DataSource = _allUsers;
-        }
-
-
+        /// <summary>
+        /// Creates 'MessageToUser' for every user which has currently conversation with currently logged in user '_activeUser'.
+        /// </summary>
+        /// <returns>Void</returns>
         private async Task LoadConversations()
         {
             using (var _dbContext = new MessengerContext())
@@ -128,6 +120,7 @@ namespace Messenger.Forms
                     .Select(x => x.FirstUser)
                     .ToListAsync());
 
+                // Create 'MessageToUser' for every receiver
                 foreach (var _receiver in _receivers)
                 {
                     var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
@@ -137,7 +130,27 @@ namespace Messenger.Forms
             }
         }
 
+        /// <summary>
+        /// Loads every user except currently logged in user ('_activeUser') into the receiver combo box.
+        /// </summary>
+        /// <returns>Void</returns>
+        private async Task LoadUsers()
+        {
+            using (var _db = new MessengerContext())
+            {
+                // Select all users except '_activeUser'
+                _allUsers = await _db.Users
+                    .Where(u => u.UserId != _activeUser.UserId)
+                    .Select(u => u.Username)
+                    .ToListAsync();
+            }
 
+            receiverComboBox.DataSource = _allUsers;
+        }
+
+        /// <summary>
+        /// Controls whether the receiver combobox or text with '+' btn is visible and switches between them.
+        /// </summary>
         private void SwitchNewMessageOverlay()
         {
             if (newMessagePanelToggle.Visible)
@@ -153,7 +166,9 @@ namespace Messenger.Forms
 
         }
 
-
+        /// <summary>
+        /// Basically "debug" function. Just connects to the DB and select user with ID == 1.
+        /// </summary>
         private void DatabaseUnlag()
         {
             using (var _db = new MessengerContext())
@@ -173,8 +188,10 @@ namespace Messenger.Forms
         /// <param name="childForm">New Child Form/Control that will be shown.</param>
         public void OpenChildForm(Form childForm)
         {
+            // if there is child form, close it first
             _activeForm?.Close();
 
+            // set new child form from param
             _activeForm = childForm;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
@@ -187,10 +204,10 @@ namespace Messenger.Forms
 
 
         /// <summary>
-        /// Sets _activeUser field to new User and changes name in side panel.
+        /// Sets _activeUser field to 'newUser' and changes name in side panel.
         /// </summary>
         /// <param name="newUser">New User</param>
-        public void UserChanged(User newUser)
+        public async Task UserChanged(User newUser)
         {
             _openConversations.Clear();
 
@@ -199,21 +216,21 @@ namespace Messenger.Forms
             this.btnUser.Text = newUser.Username;
             ChangeChildTitle($"Welcome {newUser.Username}");
 
-            // Remove all messages
+            // Clear all "conversation" buttons
             this.flowlayoutMessages.Controls.Clear();
 
             // Update open conversations
-            LoadConversations();
+            await LoadConversations();
 
             // New message receiver update
-            LoadUsers();
+            await LoadUsers();
         }
 
 
         /// <summary>
-        /// Changes title of the child title.
+        /// Changes the text of child - it's title.
         /// </summary>
-        /// <param name="newTitle">New title to be written.</param>
+        /// <param name="newTitle">New title to be set.</param>
         /// <returns>True, if 'newTitle' was set as new title.</returns>
         public bool ChangeChildTitle(string newTitle)
         {

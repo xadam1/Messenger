@@ -38,11 +38,11 @@
             this.addMessageOverlayPanel = new System.Windows.Forms.Panel();
             this.sendNewMessageButton = new System.Windows.Forms.Button();
             this.sendNewMessageLbl = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.receiverComboBox = new System.Windows.Forms.ComboBox();
             this.userPanel = new System.Windows.Forms.Panel();
             this.btnUser = new System.Windows.Forms.Button();
             this.titlePanel = new System.Windows.Forms.Panel();
-            this.exit = new System.Windows.Forms.Button();
+            this.exitBtn = new System.Windows.Forms.Button();
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelSubForm = new System.Windows.Forms.Panel();
             this.sidePanel.SuspendLayout();
@@ -128,7 +128,7 @@
             // 
             this.addMessageOverlayPanel.Controls.Add(this.sendNewMessageButton);
             this.addMessageOverlayPanel.Controls.Add(this.sendNewMessageLbl);
-            this.addMessageOverlayPanel.Controls.Add(this.comboBox1);
+            this.addMessageOverlayPanel.Controls.Add(this.receiverComboBox);
             this.addMessageOverlayPanel.Location = new System.Drawing.Point(0, 0);
             this.addMessageOverlayPanel.Name = "addMessageOverlayPanel";
             this.addMessageOverlayPanel.Size = new System.Drawing.Size(250, 69);
@@ -163,16 +163,16 @@
             this.sendNewMessageLbl.TabIndex = 5;
             this.sendNewMessageLbl.Text = "Send new message to...";
             // 
-            // comboBox1
+            // receiverComboBox
             // 
-            this.comboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(31)))), ((int)(((byte)(31)))));
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Font = new System.Drawing.Font("Montserrat", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(227)))), ((int)(((byte)(227)))));
-            this.comboBox1.Location = new System.Drawing.Point(3, 31);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(201, 24);
-            this.comboBox1.TabIndex = 4;
+            this.receiverComboBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(31)))), ((int)(((byte)(31)))));
+            this.receiverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.receiverComboBox.Font = new System.Drawing.Font("Montserrat", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.receiverComboBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(227)))), ((int)(((byte)(227)))));
+            this.receiverComboBox.Location = new System.Drawing.Point(3, 31);
+            this.receiverComboBox.Name = "receiverComboBox";
+            this.receiverComboBox.Size = new System.Drawing.Size(201, 24);
+            this.receiverComboBox.TabIndex = 4;
             // 
             // userPanel
             // 
@@ -209,7 +209,7 @@
             // titlePanel
             // 
             this.titlePanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(29)))), ((int)(((byte)(29)))));
-            this.titlePanel.Controls.Add(this.exit);
+            this.titlePanel.Controls.Add(this.exitBtn);
             this.titlePanel.Controls.Add(this.lblTitle);
             this.titlePanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.titlePanel.Location = new System.Drawing.Point(250, 0);
@@ -217,20 +217,20 @@
             this.titlePanel.Size = new System.Drawing.Size(584, 80);
             this.titlePanel.TabIndex = 1;
             // 
-            // exit
+            // exitBtn
             // 
-            this.exit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.exit.FlatAppearance.BorderSize = 0;
-            this.exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exit.Font = new System.Drawing.Font("Montserrat", 14.25F);
-            this.exit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(227)))), ((int)(((byte)(227)))));
-            this.exit.Location = new System.Drawing.Point(540, 22);
-            this.exit.Name = "exit";
-            this.exit.Size = new System.Drawing.Size(44, 41);
-            this.exit.TabIndex = 1;
-            this.exit.Text = "X";
-            this.exit.UseVisualStyleBackColor = true;
-            this.exit.Click += new System.EventHandler(this.ExitBtn_Click);
+            this.exitBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.exitBtn.FlatAppearance.BorderSize = 0;
+            this.exitBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.exitBtn.Font = new System.Drawing.Font("Montserrat", 14.25F);
+            this.exitBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(227)))), ((int)(((byte)(227)))));
+            this.exitBtn.Location = new System.Drawing.Point(540, 22);
+            this.exitBtn.Name = "exitBtn";
+            this.exitBtn.Size = new System.Drawing.Size(44, 41);
+            this.exitBtn.TabIndex = 1;
+            this.exitBtn.Text = "X";
+            this.exitBtn.UseVisualStyleBackColor = true;
+            this.exitBtn.Click += new System.EventHandler(this.ExitBtn_Click);
             // 
             // lblTitle
             // 
@@ -286,11 +286,11 @@
         private System.Windows.Forms.Panel titlePanel;
         private System.Windows.Forms.Panel panelSubForm;
         private System.Windows.Forms.Button btnUser;
-        private System.Windows.Forms.Button exit;
+        private System.Windows.Forms.Button exitBtn;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.FlowLayoutPanel flowlayoutMessages;
         private System.Windows.Forms.Button sendNewMessageButton;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox receiverComboBox;
         private System.Windows.Forms.Panel newMessagePanel;
         private System.Windows.Forms.Label sendNewMessageLbl;
         private System.Windows.Forms.Panel newMessagePanelToggle;

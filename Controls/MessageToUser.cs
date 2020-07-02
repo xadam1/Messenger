@@ -24,7 +24,11 @@ namespace Messenger.Controls
             this.Receiver.Text = receiver.Username;
         }
 
-        //TODO pridat popis 
+        /// <summary>
+        /// Checks for user(name) similarity. If the user is _receiver, clicks.
+        /// </summary>
+        /// <param name="user">User to be checked with receiver of this current conversation.</param>
+        /// <returns>False if user is not "target", clicks otherwise.</returns>
         public bool CheckUserSimilarityAndClick(User user)
         {
             if (user.UserId != _receiver.UserId) return false;

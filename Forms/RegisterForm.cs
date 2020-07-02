@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,25 +12,27 @@ namespace Messenger.Forms
         private readonly MainForm _mainForm;
         private readonly MD5CryptoServiceProvider _md5Encrypter = new MD5CryptoServiceProvider();
 
-
+        // Ctor
         public RegisterForm()
         {
             InitializeComponent();
         }
 
+        // Ctor with reference to the MainForm
         public RegisterForm(MainForm mainForm) : this()
         {
             this._mainForm = mainForm;
-            _mainForm.ChangeChildTitle("Register");
+            _mainForm.ChangeChildTitle("Registration");
         }
 
 
+        // Handles the click event on 'registerUserBtn'
         private async void RegisterUserBtn_Click(object sender, EventArgs e)
         {
             // Check if input is not empty
             if (textUsername.Text == String.Empty || textPassword.Text == String.Empty)
             {
-                MessageBox.Show("Invalid username or password.\n\nPlease try again with valid inputs.", "Invalid Arguments");
+                MessageBox.Show("Invalid username or password.\n\nPlease try again with valid inputs.", "Invalid Arguments", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textUsername.Clear();
                 textPassword.Clear();
                 textPasswordCheck.Clear();
@@ -41,7 +42,7 @@ namespace Messenger.Forms
             // Check if retyped password is correct
             if (textPassword.Text != textPasswordCheck.Text)
             {
-                MessageBox.Show("Passwords do not match!", "Error");
+                MessageBox.Show("Passwords do not match!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textPassword.Clear();
                 textPasswordCheck.Clear();
                 return;
@@ -52,6 +53,7 @@ namespace Messenger.Forms
             var _username = textUsername.Text;
             var _pass = textPassword.Text;
 
+            // Check if username is available
             if (await CheckUsernameAvailability(_username))
             {
                 using (var _dbContext = new MessengerContext())
@@ -66,14 +68,15 @@ namespace Messenger.Forms
                     await _dbContext.SaveChangesAsync();
                 }
 
-                MessageBox.Show($"Well done! {_username.ToUpper()} was registered successfully.", "Success");
+                MessageBox.Show($"Well done! {_username.ToUpper()} was registered successfully.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _mainForm.OpenChildForm(new LoginForm(_mainForm));
             }
 
-            // Username is not available
+            // Username is NOT available
             else
             {
-                MessageBox.Show($"Sorry, but {_username} is already taken!", "Invalid Username");
+                MessageBox.Show($"Sorry, but {_username} is already taken!", "Invalid Username", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textUsername.Clear();
                 textPassword.Clear();
                 textPasswordCheck.Clear();
@@ -98,6 +101,7 @@ namespace Messenger.Forms
         }
 
 
+        // Handles the click event on 'loginBtn'
         private void LoginBtn_Click(object sender, EventArgs e)
         {
             _mainForm.OpenChildForm(new LoginForm(_mainForm));

@@ -15,12 +15,13 @@ namespace Messenger.Forms
         private readonly User _receiver;
         private Conversation _conversation;
 
-
+        // Ctor
         public MessageForm()
         {
             InitializeComponent();
         }
 
+        // Overloaded ctor with two users to be set
         public MessageForm(User activeUser, User receiver) : this()
         {
             _activeUser = activeUser;
@@ -29,13 +30,19 @@ namespace Messenger.Forms
             Initialize();
         }
 
+        // Simple help function, which is needed to await the conversation load
+        // because it needs to happen before we display sent messages
+        // and ctors cannot await, since the cannot be async, so this is just a workaround
         private async Task Initialize()
         {
             await LoadConversation();
             DisplaySentMessages();
         }
 
-
+        /// <summary>
+        /// Load conversation between '_activeUser' and '_receiver' if exists, create new otherwise.
+        /// </summary>
+        /// <returns>Void</returns>
         private async Task LoadConversation()
         {
             using (var _db = new MessengerContext())
@@ -54,29 +61,32 @@ namespace Messenger.Forms
                 if (_conversationsMatch != null)
                 {
                     _conversation = _conversationsMatch;
+                    return;
                 }
 
-                else
-                {   // Only runs when Conversation does not exists
-                    var _newConversation = new Conversation
-                    {
-                        FirstUser = _activeUser,
-                        SecondUser = _receiver,
-                        Messages = new List<Message>()
-                    };
+                // Only runs when Conversation does not exists
+                var _newConversation = new Conversation
+                {
+                    FirstUser = _activeUser,
+                    SecondUser = _receiver,
+                    Messages = new List<Message>()
+                };
 
-                    _conversation = _newConversation;
+                _conversation = _newConversation;
 
-                    _db.Conversations.AddOrUpdate(_newConversation);
-                    await _db.SaveChangesAsync();
-                }
+                _db.Conversations.AddOrUpdate(_newConversation);
+                await _db.SaveChangesAsync();
             }
         }
 
 
+        /// <summary>
+        /// Goes through all messages and displays them in 'messageFlowLayoutPanel'.
+        /// Also sets color according to the type of message - Incoming / Outgoing.
+        /// </summary>
         private void DisplaySentMessages()
         {
-            if (_conversation.Messages.Count < 1)
+            if (_conversation == null || _conversation.Messages.Count < 1)
             {
                 Console.WriteLine("DEBUG: No messages found.");
                 return;
@@ -93,11 +103,16 @@ namespace Messenger.Forms
         }
 
 
+        // Handles the click event on 'sendBtn'
         private async void SendButton_Click(object sender, EventArgs e)
         {
-            var _messageBubble = new MessageBubble(_activeUser, MessageType.Outgoing, messageTextBox.Text);
+            // Display sent message first
+            var _msgText = messageTextBox.Text;
+            var _messageBubble = new MessageBubble(_activeUser, MessageType.Outgoing, _msgText);
             messageFlowLayoutPanel.Controls.Add(_messageBubble);
+            messageTextBox.Clear();
 
+            // Save message to database
             using (var _db = new MessengerContext())
             {
                 _db.Users.Attach(_activeUser);
@@ -106,7 +121,7 @@ namespace Messenger.Forms
                 var _message = new Message()
                 {
                     Sender = _activeUser,
-                    Text = messageTextBox.Text
+                    Text = _msgText
                 };
 
                 _conversation.Messages.Add(_message);
@@ -116,7 +131,6 @@ namespace Messenger.Forms
                 _dbMessages.Messages = _conversation.Messages;
 
                 await _db.SaveChangesAsync();
-                messageTextBox.Clear();
             }
         }
     }
