@@ -9,18 +9,19 @@ namespace Messenger.Controls
         private readonly string _sender;
         private readonly string _messageText;
 
-
+        // Ctor
         public MessageBubble()
         {
             InitializeComponent();
         }
 
-
+        // Ctor with sender name, type of msg and msg itself
         public MessageBubble(User sender, MessageType type, string text) : this()
         {
             _sender = sender.Username;
             _messageText = text;
 
+            // Incoming / Outgoing
             switch (type)
             {
                 case MessageType.Incoming:
@@ -35,7 +36,7 @@ namespace Messenger.Controls
             SetMessage();
         }
 
-
+        // Sets text and sender to UI
         private void SetMessage()
         {
             this.FromUserLbl.Text = _sender;

@@ -10,11 +10,13 @@ namespace Messenger.Controls
         private readonly User _receiver;
         private readonly User _activeUser;
 
+        // Ctor
         public MessageToUser()
         {
             InitializeComponent();
         }
 
+        // Ctor sets MainForm, receiver and logged in user - represents conversation
         public MessageToUser(MainForm mainFormReference, User receiver, User activeUser) : this()
         {
             _mainForm = mainFormReference;
@@ -37,12 +39,15 @@ namespace Messenger.Controls
             return true;
         }
 
-
-        public void OpenNewConversation()
+        /// <summary>
+        /// Opens conversation with receiver
+        /// </summary>
+        public void OpenConversation()
         {
             this.Username_Click(this, EventArgs.Empty);
         }
 
+        // Basically simulates clicking on receiver username
         private void Username_Click(object sender, EventArgs e)
         {
             _mainForm.ChangeChildTitle($"{_receiver.Username.ToUpper()} CHAT");

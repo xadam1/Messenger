@@ -82,7 +82,7 @@ namespace Messenger.Forms
                 var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                 this.flowlayoutMessages.Controls.Add(_messageToUser);
                 _openConversations.Add(_receiver);
-                _messageToUser.OpenNewConversation();
+                _messageToUser.OpenConversation();
             }
 
             SwitchNewMessageOverlay();
