@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Messenger.Controls;
 
@@ -10,9 +11,8 @@ namespace Messenger.Forms
 {
     public partial class MessageForm : Form
     {
-        private MainForm _mainForm;
-        private User _activeUser;
-        private User _receiver;
+        private readonly User _activeUser;
+        private readonly User _receiver;
         private Conversation _conversation;
 
 
@@ -21,18 +21,22 @@ namespace Messenger.Forms
             InitializeComponent();
         }
 
-        public MessageForm(MainForm mainForm, User activeUser, User receiver) : this()
+        public MessageForm(User activeUser, User receiver) : this()
         {
-            _mainForm = mainForm;
             _activeUser = activeUser;
             _receiver = receiver;
 
-            LoadConversation();
+            Initialize();
+        }
+
+        private async Task Initialize()
+        {
+            await LoadConversation();
             DisplaySentMessages();
         }
 
 
-        private void LoadConversation()
+        private async Task LoadConversation()
         {
             using (var _db = new MessengerContext())
             {
@@ -41,11 +45,11 @@ namespace Messenger.Forms
                 _db.Users.Attach(_receiver);
 
                 // Find conversation between these two users if one already exists
-                var _conversationsMatch = _db.Conversations
+                var _conversationsMatch = await _db.Conversations
                     .Where(c => c.FirstUser.UserId == _activeUser.UserId || c.FirstUser.UserId == _receiver.UserId)
                     .Where(c => c.SecondUser.UserId == _activeUser.UserId || c.SecondUser.UserId == _receiver.UserId)
                     .Include(x => x.Messages)
-                    .SingleOrDefault();
+                    .SingleOrDefaultAsync();
 
                 if (_conversationsMatch != null)
                 {
@@ -64,7 +68,7 @@ namespace Messenger.Forms
                     _conversation = _newConversation;
 
                     _db.Conversations.AddOrUpdate(_newConversation);
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
             }
         }
@@ -83,15 +87,15 @@ namespace Messenger.Forms
                 // Decide whether is the message incoming or outgoing
                 var _msgType = _message.Sender.UserId == _activeUser.UserId ? MessageType.Outgoing : MessageType.Incoming;
 
-                var _messageBubble = new MessageBubble(_mainForm, _message.Sender, _msgType, _message.Text);
+                var _messageBubble = new MessageBubble(_message.Sender, _msgType, _message.Text);
                 messageFlowLayoutPanel.Controls.Add(_messageBubble);
             }
         }
 
 
-        private void sendButton_Click(object sender, EventArgs e)
+        private async void SendButton_Click(object sender, EventArgs e)
         {
-            var _messageBubble = new MessageBubble(_mainForm, _activeUser, MessageType.Outgoing, messageTextBox.Text);
+            var _messageBubble = new MessageBubble(_activeUser, MessageType.Outgoing, messageTextBox.Text);
             messageFlowLayoutPanel.Controls.Add(_messageBubble);
 
             using (var _db = new MessengerContext())
@@ -108,10 +112,10 @@ namespace Messenger.Forms
                 _conversation.Messages.Add(_message);
 
                 // Assign updated Message list to object in db
-                _db.Conversations.First(x => x.ConversationId == _conversation.ConversationId).Messages =
-                    _conversation.Messages;
+                var _dbMessages = await _db.Conversations.FirstAsync(x => x.ConversationId == _conversation.ConversationId);
+                _dbMessages.Messages = _conversation.Messages;
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 messageTextBox.Clear();
             }
         }

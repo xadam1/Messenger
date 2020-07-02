@@ -133,7 +133,7 @@
             this.registerUserBtn.TabIndex = 16;
             this.registerUserBtn.Text = "Register";
             this.registerUserBtn.UseVisualStyleBackColor = true;
-            this.registerUserBtn.Click += new System.EventHandler(this.registerUserBtn_Click);
+            this.registerUserBtn.Click += new System.EventHandler(this.RegisterUserBtn_Click);
             // 
             // label3
             // 
@@ -157,7 +157,7 @@
             this.loginBtn.TabIndex = 19;
             this.loginBtn.Text = "Log In";
             this.loginBtn.UseVisualStyleBackColor = true;
-            this.loginBtn.Click += new System.EventHandler(this.loginBtn_Click);
+            this.loginBtn.Click += new System.EventHandler(this.LoginBtn_Click);
             // 
             // RegisterForm
             // 

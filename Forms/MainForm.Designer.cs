@@ -110,7 +110,7 @@
             this.newMessageOverlayBtn.Size = new System.Drawing.Size(29, 28);
             this.newMessageOverlayBtn.TabIndex = 7;
             this.newMessageOverlayBtn.UseVisualStyleBackColor = true;
-            this.newMessageOverlayBtn.Click += new System.EventHandler(this.newMessageOverlayBtn_Click);
+            this.newMessageOverlayBtn.Click += new System.EventHandler(this.NewMessageOverlayBtn_Click);
             // 
             // newMessageOverlay
             // 
@@ -149,7 +149,7 @@
             this.sendNewMessageButton.Size = new System.Drawing.Size(37, 38);
             this.sendNewMessageButton.TabIndex = 3;
             this.sendNewMessageButton.UseVisualStyleBackColor = true;
-            this.sendNewMessageButton.Click += new System.EventHandler(this.sendNewMessageButton_Click);
+            this.sendNewMessageButton.Click += new System.EventHandler(this.SendNewMessageButton_Click);
             // 
             // sendNewMessageLbl
             // 
@@ -261,6 +261,7 @@
             this.Controls.Add(this.panelSubForm);
             this.Controls.Add(this.titlePanel);
             this.Controls.Add(this.sidePanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(840, 580);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

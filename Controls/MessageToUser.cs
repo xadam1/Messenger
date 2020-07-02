@@ -24,18 +24,25 @@ namespace Messenger.Controls
             this.Receiver.Text = receiver.Username;
         }
 
+        //TODO pridat popis 
         public bool CheckUserSimilarityAndClick(User user)
         {
             if (user.UserId != _receiver.UserId) return false;
-            
+
             Username_Click(null, EventArgs.Empty);
             return true;
+        }
+
+
+        public void OpenNewConversation()
+        {
+            this.Username_Click(this, EventArgs.Empty);
         }
 
         private void Username_Click(object sender, EventArgs e)
         {
             _mainForm.ChangeChildTitle($"{_receiver.Username.ToUpper()} CHAT");
-            _mainForm.OpenChildForm(new MessageForm(_mainForm, _activeUser, _receiver));
+            _mainForm.OpenChildForm(new MessageForm(_activeUser, _receiver));
         }
     }
 }

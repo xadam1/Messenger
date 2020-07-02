@@ -38,11 +38,10 @@
             // 
             // messageFlowLayoutPanel
             // 
-            this.messageFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.messageFlowLayoutPanel.AutoScroll = true;
             this.messageFlowLayoutPanel.AutoSize = true;
+            this.messageFlowLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(31)))), ((int)(((byte)(31)))));
+            this.messageFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.messageFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.messageFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.messageFlowLayoutPanel.Name = "messageFlowLayoutPanel";
@@ -77,7 +76,7 @@
             this.sendButton.Size = new System.Drawing.Size(34, 31);
             this.sendButton.TabIndex = 2;
             this.sendButton.UseVisualStyleBackColor = true;
-            this.sendButton.Click += new System.EventHandler(this.sendButton_Click);
+            this.sendButton.Click += new System.EventHandler(this.SendButton_Click);
             // 
             // windowPanel
             // 

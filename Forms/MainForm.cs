@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Messenger.Controls;
 
@@ -12,13 +15,15 @@ namespace Messenger.Forms
         private Form _activeForm;
         private User _activeUser;
         private List<string> _allUsers;
-        private List<User> _openConversations = new List<User>();
+        private readonly List<User> _openConversations = new List<User>();
 
 
         public MainForm()
         {
             InitializeComponent();
 
+            // This just 'unlags' the database for the first time, because EF is building the model
+            // when interacting with the database for the first time
             DatabaseUnlag();
         }
 
@@ -37,7 +42,7 @@ namespace Messenger.Forms
         }
 
 
-        private void sendNewMessageButton_Click(object sender, EventArgs e)
+        private async void SendNewMessageButton_Click(object sender, EventArgs e)
         {
             if (_activeUser == null)
             {
@@ -50,8 +55,8 @@ namespace Messenger.Forms
 
             using (var _db = new MessengerContext())
             {
-                var _receiver = _db.Users
-                    .FirstOrDefault(x => x.Username.Equals(_receiverName));
+                var _receiver = await _db.Users
+                    .FirstOrDefaultAsync(x => x.Username.Equals(_receiverName));
 
                 // Check for invalid receiver
                 if (_receiver == null || _receiver.UserId == _activeUser.UserId)
@@ -70,19 +75,19 @@ namespace Messenger.Forms
                         flag = _msg.CheckUserSimilarityAndClick(_receiver);
                         if (flag) { return; }
                     }
-
                 }
 
                 var _messageToUser = new MessageToUser(this, _receiver, _activeUser);
                 this.flowlayoutMessages.Controls.Add(_messageToUser);
                 _openConversations.Add(_receiver);
+                _messageToUser.OpenNewConversation();
             }
 
             SwitchNewMessageOverlay();
         }
 
 
-        private void newMessageOverlayBtn_Click(object sender, EventArgs e)
+        private void NewMessageOverlayBtn_Click(object sender, EventArgs e)
         {
             SwitchNewMessageOverlay();
         }
@@ -92,36 +97,36 @@ namespace Messenger.Forms
 
         #region Private methods
 
-        private void LoadUsers()
+        private async Task LoadUsers()
         {
             using (var _db = new MessengerContext())
             {
-                _allUsers = _db.Users
+                _allUsers = await _db.Users
                     .Where(u => u.UserId != _activeUser.UserId)
                     .Select(u => u.Username)
-                    .ToList();
+                    .ToListAsync();
             }
 
             comboBox1.DataSource = _allUsers;
         }
 
 
-        private void LoadConversations()
+        private async Task LoadConversations()
         {
             using (var _dbContext = new MessengerContext())
             {
                 _dbContext.Users.Attach(_activeUser);
 
                 // Add users who have conversation with currently logged user
-                var _receivers = _dbContext.Conversations
+                var _receivers = await _dbContext.Conversations
                     .Where(x => x.FirstUser.UserId == _activeUser.UserId)
                     .Select(x => x.SecondUser)
-                    .ToList();
+                    .ToListAsync();
 
-                _receivers.AddRange(_dbContext.Conversations
+                _receivers.AddRange(await _dbContext.Conversations
                     .Where(x => x.SecondUser.UserId == _activeUser.UserId)
                     .Select(x => x.FirstUser)
-                    .ToList());
+                    .ToListAsync());
 
                 foreach (var _receiver in _receivers)
                 {

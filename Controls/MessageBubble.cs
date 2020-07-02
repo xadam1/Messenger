@@ -6,7 +6,6 @@ namespace Messenger.Controls
 {
     public partial class MessageBubble : UserControl
     {
-        private readonly MainForm _mainForm;
         private readonly string _sender;
         private readonly string _messageText;
 
@@ -17,9 +16,8 @@ namespace Messenger.Controls
         }
 
 
-        public MessageBubble(MainForm mainForm, User sender, MessageType type, string text) : this()
+        public MessageBubble(User sender, MessageType type, string text) : this()
         {
-            _mainForm = mainForm;
             _sender = sender.Username;
             _messageText = text;
 

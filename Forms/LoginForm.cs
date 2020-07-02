@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Messenger.Forms
@@ -24,7 +26,7 @@ namespace Messenger.Forms
         }
 
 
-        private void loginBtn_Click(object sender, EventArgs e)
+        private async void LoginBtn_Click(object sender, EventArgs e)
         {
             string _username = textUsername.Text;
             string _pass = textPassword.Text;
@@ -34,7 +36,7 @@ namespace Messenger.Forms
             Console.WriteLine($"DEBUG:\nUsername={_username}\nPassword={_pass}\nHashedPass={_hashedPass}");
 
             // TODO Change for hashed pass version
-            var _newUser = LoginUser(_username, _pass);
+            var _newUser = await LoginUser(_username, _pass);
 
             // User not found
             if (_newUser == null)
@@ -52,22 +54,21 @@ namespace Messenger.Forms
                 _mainForm.UserChanged(_newUser);
                 _mainForm.CloseChildForm();
             }
-
         }
 
 
         // Returns null if user not found, <User> else
-        private User LoginUser(string username, string pass)
+        private async Task<User> LoginUser(string username, string pass)
         {
             using (var _dataContext = new MessengerContext())
             {
-                return _dataContext.Users
-                    .FirstOrDefault(usr => usr.Username == username && usr.Password == pass);
+                return await _dataContext.Users
+                    .FirstOrDefaultAsync(usr => usr.Username == username && usr.Password == pass);
             }
         }
 
 
-        private void registerUserBtn_Click(object sender, EventArgs e)
+        private void RegisterUserBtn_Click(object sender, EventArgs e)
         {
             _mainForm.OpenChildForm(new RegisterForm(_mainForm));
         }

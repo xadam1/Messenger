@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Messenger.Forms
 {
     public partial class RegisterForm : Form
     {
-        private MainForm _mainForm;
-        private MD5CryptoServiceProvider md5Encrypter = new MD5CryptoServiceProvider();
+        private readonly MainForm _mainForm;
+        private readonly MD5CryptoServiceProvider _md5Encrypter = new MD5CryptoServiceProvider();
 
 
         public RegisterForm()
@@ -24,7 +26,7 @@ namespace Messenger.Forms
         }
 
 
-        private void registerUserBtn_Click(object sender, EventArgs e)
+        private async void RegisterUserBtn_Click(object sender, EventArgs e)
         {
             // Check if input is not empty
             if (textUsername.Text == String.Empty || textPassword.Text == String.Empty)
@@ -45,10 +47,12 @@ namespace Messenger.Forms
                 return;
             }
 
+            //TODO Hashed password usage
+
             var _username = textUsername.Text;
             var _pass = textPassword.Text;
 
-            if (CheckUsernameAvailability(_username))
+            if (await CheckUsernameAvailability(_username))
             {
                 using (var _dbContext = new MessengerContext())
                 {
@@ -59,13 +63,14 @@ namespace Messenger.Forms
                     };
 
                     _dbContext.Users.AddOrUpdate(_newUser);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
 
                 MessageBox.Show($"Well done! {_username.ToUpper()} was registered successfully.", "Success");
                 _mainForm.OpenChildForm(new LoginForm(_mainForm));
             }
 
+            // Username is not available
             else
             {
                 MessageBox.Show($"Sorry, but {_username} is already taken!", "Invalid Username");
@@ -75,21 +80,25 @@ namespace Messenger.Forms
             }
         }
 
-        // Checks if username is already registered in database
-        // True - available, False - not available
-        private bool CheckUsernameAvailability(string chosenUsername)
+
+        /// <summary>
+        /// Checks if username is already registered in database.
+        /// </summary>
+        /// <param name="chosenUsername">Name to be checked.</param>
+        /// <returns>True - available, False - not available</returns>
+        private async Task<bool> CheckUsernameAvailability(string chosenUsername)
         {
             using (var _dbContext = new MessengerContext())
             {
-                var _foundSameUsername = _dbContext.Users
-                    .FirstOrDefault(x => x.Username == chosenUsername);
+                var _foundSameUsername = await _dbContext.Users
+                    .FirstOrDefaultAsync(x => x.Username == chosenUsername);
 
                 return _foundSameUsername == null;
             }
         }
-        
 
-        private void loginBtn_Click(object sender, EventArgs e)
+
+        private void LoginBtn_Click(object sender, EventArgs e)
         {
             _mainForm.OpenChildForm(new LoginForm(_mainForm));
         }
