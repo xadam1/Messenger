@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,7 +11,7 @@ namespace Messenger.Forms
     public partial class RegisterForm : Form
     {
         private readonly MainForm _mainForm;
-        private readonly MD5CryptoServiceProvider _md5Encrypter = new MD5CryptoServiceProvider();
+        private readonly MD5CryptoServiceProvider _md5Crypto = new MD5CryptoServiceProvider();
 
         // Ctor
         public RegisterForm()
@@ -47,11 +48,12 @@ namespace Messenger.Forms
                 textPasswordCheck.Clear();
                 return;
             }
-
-            //TODO Hashed password usage
-
+            
             var _username = textUsername.Text;
             var _pass = textPassword.Text;
+
+            // Compute hashed pass
+            var _hashedPass = Encoding.ASCII.GetString(_md5Crypto.ComputeHash(Encoding.ASCII.GetBytes(_pass)));
 
             // Check if username is available
             if (await CheckUsernameAvailability(_username))
@@ -61,7 +63,7 @@ namespace Messenger.Forms
                     var _newUser = new User()
                     {
                         Username = _username,
-                        Password = _pass
+                        Password = _hashedPass
                     };
 
                     _dbContext.Users.AddOrUpdate(_newUser);

@@ -39,9 +39,8 @@ namespace Messenger.Forms
 
             Console.WriteLine($"DEBUG:\nUsername={_username}\nPassword={_pass}\nHashedPass={_hashedPass}");
 
-            // TODO Change for hashed pass version
             // Try to log in user
-            var _newUser = await LoginUser(_username, _pass);
+            var _newUser = await LoginUser(_username, _hashedPass);
 
             // User not found
             if (_newUser == null)
@@ -56,7 +55,7 @@ namespace Messenger.Forms
             // Credentials were correct -> log new user in
             else
             {
-                _mainForm.UserChanged(_newUser);
+                await _mainForm.UserChanged(_newUser);
                 _mainForm.CloseChildForm();
             }
         }
