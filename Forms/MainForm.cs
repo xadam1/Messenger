@@ -169,11 +169,11 @@ namespace Messenger.Forms
         /// <summary>
         /// Basically "debug" function. Just connects to the DB and select user with ID == 1.
         /// </summary>
-        private void DatabaseUnlag()
+        private async Task DatabaseUnlag()
         {
             using (var _db = new MessengerContext())
             {
-                var _unlag = _db.Users.Where(x => x.UserId == 1);
+                var _lagUser = await Task.Run(() => _db.Users.FirstAsync());
             }
         }
 
