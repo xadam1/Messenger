@@ -6,4 +6,4 @@ Application itself is devided into several "sections".
 
 ## Welcome Page
 
-<img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/default.png" width="100" height="100">
+<img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/default.png" width="300" height="300">
