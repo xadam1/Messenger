@@ -36,3 +36,8 @@ User's messages will be loaded from the database. That means users that have con
 Now you can also send new messages to other users, *if a user selects another user, with already opened conversation - this conversation is opened.*
 
 <img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/select_msg.png" width="500" height="500">
+
+### Chat Window
+Finally this is the look of *chatting window* itself. Note that messages are color coded according to sender.
+
+<img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/chat_window.png" width="500" height="500">
