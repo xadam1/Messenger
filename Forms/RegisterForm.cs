@@ -73,6 +73,8 @@ namespace Messenger.Forms
                 MessageBox.Show($"Well done! {_username.ToUpper()} was registered successfully.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _mainForm.OpenChildForm(new LoginForm(_mainForm));
+
+                Console.WriteLine($"DEBUG:\nusername: {_username} password: {_pass} hash: {_hashedPass}");
             }
 
             // Username is NOT available
