@@ -1,4 +1,8 @@
 # Messenger
+* One
+* Two
+* Three
+
 This is simple chatting application written in C# and built with Windows Forms & local database. To deal with database I used [Entity Framework](https://docs.microsoft.com/en-us/ef/) and [LINQ](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/).
 
 Application itself is devided into several "sections".
