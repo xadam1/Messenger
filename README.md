@@ -21,7 +21,7 @@ Here you have few options:
 You still cannot see or send new messages (until you log in).
 
 ### Register Page
-Similarly to **login page** here you can also:
+Similarly to **login page** here user is able to:
 * Register
     via username & password. As said before, *password hashing* is implemented.
 * Go back to login page
@@ -29,4 +29,10 @@ Similarly to **login page** here you can also:
 <img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/register.png" width="500" height="500">
 
 ### After Logging in
+User's messages will be loaded from the database. That means users that have conversation with currently logged in user, will be displayed in the left panel. After clicking on another's user name, chat window will pop up.
+
 <img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/logged_in.png" width="500" height="500">
+
+Now you can also send new messages to other users, *if a user selects another user, with already opened conversation - this conversation is opened.*
+
+<img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/select_msg.png" width="500" height="500">
