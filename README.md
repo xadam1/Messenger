@@ -10,11 +10,12 @@ This is the page that will pop up after starting the app. First things first, yo
 ### Login Page
 <img src="https://github.com/xadam1/Messenger/blob/master/Resources/img/login.png" width="500" height="500">
 Here you have few options:
-* Log Into your account
+<ol>
+    <li>Log Into your account</li>
     using 'username' and 'password'. Among other checks, I used _simple hashing for the passwords, so the app would not store passwords unprotected_.
-* Register new account
+    <li>Register new account</li>
     which would bring you to Register page.
-    
+</ol>
 You still cannot see or send new messages (until you log in).
 
 ### Register Page
